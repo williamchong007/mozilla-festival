@@ -1,0 +1,23 @@
+{
+  "name": "mozilla-festival",
+  "version": "1.0.0",
+  "description": "Fork of robhawkes/mozilla-festival,",
+  "main": "game.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/williamchong007/mozilla-festival.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/williamchong007/mozilla-festival/issues"
+  },
+  "homepage": "https://github.com/williamchong007/mozilla-festival#readme",
+  "dependencies": {
+    "express": "^4.13.0",
+    "socket.io": "^1.3.5"
+  }
+}

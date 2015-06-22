@@ -1,16 +1,19 @@
 /**************************************************
 ** NODE.JS REQUIREMENTS
 **************************************************/
-var util = require("util"),					// Utility resources (logging, object inspection, etc)
-	io = require("socket.io"),				// Socket.IO
-	Player = require("./Player").Player;	// Player class
+var util = require("util"),			
+	Player = require("./Player").Player;	
 
+var express = require('express');
+var app = express();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);	
 
 /**************************************************
 ** GAME VARIABLES
 **************************************************/
 var socket,		// Socket controller
-	players;	// Array of connected players
+	players=[];	// Array of connected players
 
 
 /**************************************************
@@ -18,46 +21,36 @@ var socket,		// Socket controller
 **************************************************/
 function init() {
 	// Create an empty array to store players
-	players = [];
-
-	// Set up Socket.IO to listen on port 8000
-	socket = io.listen(8000);
-
-	// Configure Socket.IO
-	socket.configure(function() {
-		// Only use WebSockets
-		socket.set("transports", ["websocket"]);
-
-		// Restrict log output
-		socket.set("log level", 2);
+	var port=80;
+	http.listen(process.env.PORT||80, function(){
+	  util.log('listening on *: '+process.env.PORT||80);
 	});
-
-	// Start listening for events
-	setEventHandlers();
+		
+	app.use(express.static(__dirname + '/public'));
+	app.get('/', function(req, res){
+	  res.sendfile('./public/index.html');
+	});
 };
 
 
 /**************************************************
 ** GAME EVENT HANDLERS
 **************************************************/
-var setEventHandlers = function() {
-	// Socket.IO
-	socket.sockets.on("connection", onSocketConnection);
-};
 
-// New socket connection
-function onSocketConnection(client) {
-	util.log("New player has connected: "+client.id);
+io.on('connection', function(socket){
+	util.log("New player has connected: "+socket.id);
 
 	// Listen for client disconnected
-	client.on("disconnect", onClientDisconnect);
+	socket.on("disconnect", onClientDisconnect);
 
 	// Listen for new player message
-	client.on("new player", onNewPlayer);
+	socket.on("new player", onNewPlayer);
 
 	// Listen for move player message
-	client.on("move player", onMovePlayer);
-};
+	socket.on("move player", onMovePlayer);
+  });
+
+// New socket connection
 
 // Socket client has disconnected
 function onClientDisconnect() {
